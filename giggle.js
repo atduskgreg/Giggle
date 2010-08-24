@@ -1,9 +1,17 @@
-GResult = function(resultData){
-      this.title = resultData.title;
-      this.url = resultData.unescapedUrl;
-      this.domain = resultData.visibleUrl;
-    }
-    
+Giggle = {};
+
+Giggle = {
+  GResult : function(resultData){
+    this.title = resultData.title;
+    this.url = resultData.unescapedUrl;
+    this.domain = resultData.visibleUrl;
+  }
+}
+
+
+
+
+/*    
 Tmbl = {
   rblgs : function(tumblog){
     Tmbl.ggle.reblogQuery(tumblog, function(data){
@@ -72,3 +80,4 @@ Tmbl = {
     }
   }
 }
+*/
