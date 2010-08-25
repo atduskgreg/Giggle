@@ -1,6 +1,5 @@
-Giggle = {};
-
-Giggle = {
+var Giggle = (function(){
+  return {
   GResult : function(resultData){
     this.title = resultData.title;
     this.url = resultData.unescapedUrl;
@@ -11,46 +10,47 @@ Giggle = {
   expectedPages : 0,
   moreResultsUrl : null,
   processSearchResultsPage : function(data){
-    Giggle.googleUrl = data.responseData.cursor.moreResultsUrl;
+    this.googleUrl = data.responseData.cursor.moreResultsUrl;
     for (i = 0; i < data.responseData.results.length; i++){
-      Giggle.results.push(new Giggle.GResult(data.responseData.results[i]));          
+      this.results.push(new this.GResult(data.responseData.results[i]));          
     }
   },
   
-  q : function(query, callback){
-    Giggle.queryGoogle(query, 0, callback)
+  q : function(query, locals, callback){
+    this.queryGoogle(query, 0, locals, callback)
   },
   
-  queryGoogle : function(q, p, callback){
+  queryGoogle : function(q, p, locals, callback){
       var currentPage = p;
       var rootUrl = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&start="+p+"&q=";
+      var t = this;
       $.getJSON(rootUrl + q + "&callback=?",function(data){
         if(data.responseData){
-          Giggle.expectedPages = Math.ceil(data.responseData.cursor.estimatedResultCount / 4);
-          Giggle.processSearchResultsPage(data);
+          t.expectedPages = Math.ceil(data.responseData.cursor.estimatedResultCount / 4);
+          t.processSearchResultsPage(data);
         } else {
-          Giggle.reachedMax = true;
-          callback(Giggle.results);
-          Giggle.reachedMax = false;
+          t.reachedMax = true;
+          callback(t.results, locals);
+          t.reachedMax = false;
           
           // reset
-          Giggle.results = [];
-          Giggle.expectedPages = 0;
+          t.results = [];
+          t.expectedPages = 0;
           return false;
         }
         
-        if(currentPage + 1 < Giggle.expectedPages){
-          Giggle.queryGoogle(q, (currentPage + 1), callback);
+        if(currentPage + 1 < t.expectedPages){
+          t.queryGoogle(q, (currentPage + 1), locals, callback);
         }
         else{
-          callback(Giggle.results);
+          callback(t.results, locals);
           // reset
-          Giggle.results = [];
-          Giggle.expectedPages = 0;
+          t.results = [];
+          t.expectedPages = 0;
         }
         return false;
       });
       return false;
     }
-  
-}
+  }
+})
